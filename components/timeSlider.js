@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
 import Utils from '../lib/utils';
-import Draggable from 'react-draggable';
 import Slider from 'rc-slider';
 import Tooltip from 'rc-tooltip';
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
