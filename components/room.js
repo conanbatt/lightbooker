@@ -95,7 +95,6 @@ export default class Room extends React.Component {
 
   onTimePick(booking){
     let newBooking = Object.assign({}, this.state.booking, booking);
-    console.log(newBooking)
     this.setState({ booking: newBooking })
   }
 
@@ -153,10 +152,7 @@ export default class Room extends React.Component {
   }
 
   commitBooking(){
-    //Validate
-    //send form
     if(this.validateBooking()){
-      console.log("sending request")
       Utils.submitBooking({
         passes: this.state.attendees,
         booking: {
