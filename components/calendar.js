@@ -10,7 +10,7 @@ export default class Calendar extends React.Component {
     let { rooms } = this.props;
 
     let renderedRooms = rooms.map((r, i)=>{
-      return <Room key={i} {...r} date={ this.props.date }/>
+      return <Room key={i + Number(this.props.date)} {...r} date={ this.props.date }/>
     })
 
     let noRooms = <div className="empty">

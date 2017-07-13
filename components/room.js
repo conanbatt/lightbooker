@@ -4,6 +4,7 @@ import Utils from '../lib/utils';
 import Attendee from './attendee';
 import Dropdown from './dropdown';
 import moment from 'moment';
+import { CSSTransitionGroup } from 'react-transition-group'
 
 
 const Details = ({props})=>(
@@ -92,10 +93,10 @@ export default class Room extends React.Component {
     this.setState({booking: booking})
   }
 
-  onTimePick(e){
-    let booking = this.state.booking;
-    booking[e.target.name] = e.target.value
-    this.setState({ booking: booking })
+  onTimePick(booking){
+    let newBooking = Object.assign({}, this.state.booking, booking);
+    console.log(newBooking)
+    this.setState({ booking: newBooking })
   }
 
   timeOptions(min){
@@ -219,21 +220,24 @@ export default class Room extends React.Component {
         select {
             margin: 0 10px;
         }
+        .booking {
+          overflow: hidden;
+          transition: max-height 1s ease;
+        }
       `}
       </style>
       <div className="panel panel-default">
         <div className="panel-body">
           <h4><strong> Room { this.props.name } on { this.props.location }</strong></h4>
           <div className="timeslider_container">
-            <TimeSlider availabilities={this.props.avail} booking={ this.state.bookingMode ? this.state.booking : false}/>
+            <TimeSlider onTimePick={ (e)=> this.onTimePick(e) }availabilities={this.props.avail} booking={ this.state.bookingMode ? this.state.booking : false}/>
           </div>
           { this.state.success ? <p className="text-success">Booked the room successfully!</p> : null }
           <div className="actions">
             <button className="btn action btn-brand-orange"    onClick={(e)=>{ this.toggleBooking(e)}}>Book</button>
             <button className="btn action btn-brand-orange" onClick={(e)=>{ this.toggleDetails(e)}}>{ this.state.showDetails ? 'Hide Details': 'Show Details'}</button>
           </div>
-          { this.state.bookingMode ? <Dropdown>
-            <div className="booking">
+            { this.state.bookingMode ?  <div key={0} className="booking">
               <h4> Manage Booking </h4>
               { this.state.errors.server ? <p className="text-danger">{ this.state.errors.server }</p> : null}
               <div className={ this.state.errors.booking.title ? "form-group has-error" : "form-group"}>
@@ -254,11 +258,11 @@ export default class Room extends React.Component {
               <div className="form-inline">
                 <div className="form-group">
                   <label className="margin-label">From</label>
-                  <select name="from" className="form-control" onChange={ (e)=> this.onTimePick(e)}>
+                  <select value={this.state.booking.from} name="from" className="form-control" onChange={ (e)=> this.onTimePick({from: e.target.value})}>
                     { this.timeOptions("06:59") }
                   </select>
                   <label className="margin-label">To</label>
-                  <select name="to" className="form-control" onChange={ (e)=> this.onTimePick(e)}>
+                  <select value={this.state.booking.to} name="to" className="form-control" onChange={ (e)=> this.onTimePick({to: e.target.value})}>
                     { this.timeOptions(this.state.booking.from) }
                   </select>
                 </div>
@@ -268,7 +272,6 @@ export default class Room extends React.Component {
                 { this.state.attendees.map((attendee, i)=>{
                   let error = this.state.errors.attendees[i];
                   return <div key={i}>
-                    { /* <span className="text-danger">{error}</span> */}
                     <Attendee
                       error={!!error}
                       key={i} index={i}
@@ -279,8 +282,7 @@ export default class Room extends React.Component {
               </div>
               <button className="action btn btn-brand-orange" onClick={ ()=> this.addAttendee() }>Add Attendee </button>
               <button className="action btn btn-brand-orange" onClick={ ()=> this.commitBooking() }>Save Booking </button>
-            </div>
-          </Dropdown>: null }
+            </div> : null }
           { this.state.showDetails ? <Details props={this.props}/> : null }
         </div>
       </div>
