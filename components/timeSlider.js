@@ -47,6 +47,7 @@ export default class TimeSlider extends React.Component {
             height: 15px;
             top: 0;
             transition: all 0.5s ease-in-out;
+            opacity: 0.7;
           }
           `}</style>
       </div>
