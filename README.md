@@ -22,3 +22,10 @@ I did deviate in a couple of things:
 
 * I did not implement the "next meetings" filter, but implemented a smarter filter that allows you to write different criteria, including a time, which is more fine grained than a simple filter checkbox.
 
+## TODOS ##
+
+Working on a problem with a tight deadline is bound to create some debt. I realized that normalizing times and timezones was harder than just simple conversions. I would separate the logic for that and abstract the sliders and the time pickers into a single type of unit. Right now, its sometimes converted to minutes, then to times and operated on in different formats.
+
+The color pallete is fine, but the site is a bit too cheerful! It lacks the soberness of enterprise.
+
+Icons: there are several icons I would replace (arrows, slider pickers).

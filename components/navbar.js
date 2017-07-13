@@ -10,12 +10,16 @@ export default ()=> (
       .navbar-brand {
         color: white;
       }
+      .white_text {
+        color: white !important;
+      }
     `}</style>
     <div className="container">
       <Link prefetch href="/"><a className="navbar-brand">
         LightBooker
       </a></Link>
       <ul className="nav navbar-nav">
+        <li><a className="white_text" href="https://github.com/conanbatt/lightbooker" target="_blank">See Code</a></li>
       </ul>
       <ul className="nav navbar-nav navbar-right">
       </ul>
