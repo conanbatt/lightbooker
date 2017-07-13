@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
+    "next": "^2.4.4",
+    "react": "^15.6.1",
+    "react-bootstrap": "^0.31.0",
+    "react-dom": "^15.6.1"
+  }
+}
