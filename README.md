@@ -5,9 +5,9 @@ npm run dev PORT=XXXX
 
 ## Tools ##
 
-Next.js is an open source framework to quickly do server rendered react apps with remote backends.
-I chose this tool for the easyness of deploying and the low overhead to setup the entire project. Specially considering the single page app requirement it was a better choice than Rails.
+  Next.js https://github.com/zeit/next.js/
 
+Next is a framework to do server-side rendering react for front-end apps that consume apis.
 Other libraries used are moment.js and react slider for the time ranges.
 
 ## Product Decisions ##

@@ -3,53 +3,15 @@ import TimeSlider from './timeSlider';
 import Utils from '../lib/utils';
 import Attendee from './attendee';
 import Dropdown from './dropdown';
-import BookingModal from './bookingModal';
 import moment from 'moment';
 import { CSSTransitionGroup } from 'react-transition-group'
+import { Modal } from 'react-bootstrap';
 
-
-const Details = ({props})=>(
-  <div className="row">
-    <div className="col-md-4 col-lg-4 col-sm-4">
-      <img src={Utils.imageURL(props.images[0])} className="img-responsive img-thumbnail" alt="Room Image"/>
-    </div>
-    <div className="col-md-8 col-lg-8 col-sm-8">
-      <table className="table table-striped table-bordered">
-        <tbody>
-
-          <tr>
-            <td>Room Name</td>
-            <td><strong>{props.name}</strong></td>
-          </tr>
-          <tr>
-            <td>Floor</td>
-            <td><strong>{props.location}</strong></td>
-          </tr>
-          <tr>
-            <td>Capacity</td>
-            <td><strong>{props.capacity} people</strong></td>
-          </tr>
-          <tr>
-            <td>Size</td>
-            <td><strong>{props.size}</strong></td>
-          </tr>
-          <tr>
-            <td>Equipment</td>
-            <td><strong> { props.equipment.join(", ")} </strong></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-)
-
-export default class Room extends React.Component {
+export default class BookingModal extends React.Component {
 
   constructor(props){
     super(props)
     this.state = {
-      bookingMode: false,
-      showDetails: false,
       attendees: [{}],
       booking: {
         from: "07:00",
@@ -63,13 +25,6 @@ export default class Room extends React.Component {
         server: ""
       }
     }
-  }
-
-  toggleBooking(){
-    this.setState({bookingMode: !this.state.bookingMode, showDetails: !this.state.bookingMode ? false : this.state.showDetails })
-  }
-  toggleDetails(){
-    this.setState({showDetails: !this.state.showDetails, bookingMode: !this.state.showDetails ? false : this.state.bookingMode })
   }
 
   addAttendee(){
@@ -181,7 +136,7 @@ export default class Room extends React.Component {
 
   render(){
 
-    return(<div className="room">
+    return(<div className="booking">
       <style jsx>{`
         .btn-brand-orange {
             background: #EC7B23;
@@ -223,21 +178,66 @@ export default class Room extends React.Component {
         }
       `}
       </style>
-      <div className="panel panel-default">
-        <div className="panel-body">
-          <h4><strong> Room { this.props.name } on { this.props.location }</strong></h4>
-          <div className="timeslider_container">
-            <TimeSlider onTimePick={ (e)=> this.onTimePick(e) }availabilities={this.props.avail} booking={ false }/>
-          </div>
+      <Modal bsSize="lg" show={this.props.show} onHide={this.props.onClose}>
+        <Modal.Header closeButton>
+          <Modal.Title> Manage Booking on Room { this.props.name } on { this.props.location } </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           { this.state.success ? <p className="text-success">Booked the room successfully!</p> : null }
-          <div className="actions">
-            <button className="btn action btn-brand-orange"    onClick={(e)=>{ this.toggleBooking(e)}}>Book</button>
-            <button className="btn action btn-brand-orange" onClick={(e)=>{ this.toggleDetails(e)}}>{ this.state.showDetails ? 'Hide Details': 'Show Details'}</button>
+          <div className="timeslider_container">
+            <TimeSlider onTimePick={ (e)=> this.onTimePick(e) } availabilities={this.props.avail} booking={ this.state.booking }/>
           </div>
-          <BookingModal onClose={(e) => this.setState({bookingMode: false})} show={this.state.bookingMode} {...this.props}/>
-          { this.state.showDetails ? <Details props={this.props}/> : null }
-        </div>
-      </div>
+          <div key={0} className="booking">
+            { this.state.errors.server ? <p className="text-danger">{ this.state.errors.server }</p> : null}
+            <div className={ this.state.errors.booking.title ? "form-group has-error" : "form-group"}>
+              <label> Event Title </label>
+              <input value={ this.state.booking.title }
+                     type="text" name="title"
+                     className="form-control" onChange={(e)=>{ this.onChange(e)}}
+              />
+            </div>
+            <div className={ this.state.errors.booking.description ? "form-group has-error" : "form-group"}>
+              <label> Event Description </label>
+              <textarea value={ this.state.booking.description } name="description"
+                  className="form-control"
+                  onChange={(e)=>{ this.onChange(e)}}
+              />
+            </div>
+            <p className="text-danger">{ this.state.errors.booking.times }</p>
+            <div className="row">
+              <div className="col-md-12 col-lg-12 col-sm-12">
+                <div className="form-inline">
+                  <div className="form-group">
+                    <label className="margin-label">From</label>
+                    <select value={this.state.booking.from} name="from" className="form-control" onChange={ (e)=> this.onTimePick({from: e.target.value})}>
+                      { this.timeOptions("06:59") }
+                    </select>
+                    <label className="margin-label">To</label>
+                    <select value={this.state.booking.to} name="to" className="form-control" onChange={ (e)=> this.onTimePick({to: e.target.value})}>
+                      { this.timeOptions(this.state.booking.from) }
+                    </select>
+                  </div>
+                </div>
+                <h5> Attendees </h5>
+                <div className="attendees">
+                  { this.state.attendees.map((attendee, i)=>{
+                    let error = this.state.errors.attendees[i];
+                    return <div key={i}>
+                      <Attendee
+                        error={!!error}
+                        key={i} index={i}
+                        attendee={attendee} updateUser={ (i, user) => this.updateAttendee(i, user) }
+                        removeAttendee={ (i) => this.removeAttendee(i)}/>
+                    </div>
+                  })}
+                </div>
+                <button className="action btn btn-brand-orange" onClick={ ()=> this.addAttendee() }>Add Attendee </button>
+                <button className="action btn btn-brand-orange" onClick={ ()=> this.commitBooking() }>Save Booking </button>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>)
   }
 }
